@@ -1,50 +1,84 @@
-# \ActivitiesApi
+# \ActivitiesAPI
 
 All URIs are relative to *https://www.strava.com/api/v3*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**CreateActivity**](ActivitiesApi.md#CreateActivity) | **Post** /activities | Create an Activity
-[**GetActivityById**](ActivitiesApi.md#GetActivityById) | **Get** /activities/{id} | Get Activity
-[**GetCommentsByActivityId**](ActivitiesApi.md#GetCommentsByActivityId) | **Get** /activities/{id}/comments | List Activity Comments
-[**GetKudoersByActivityId**](ActivitiesApi.md#GetKudoersByActivityId) | **Get** /activities/{id}/kudos | List Activity Kudoers
-[**GetLapsByActivityId**](ActivitiesApi.md#GetLapsByActivityId) | **Get** /activities/{id}/laps | List Activity Laps
-[**GetLoggedInAthleteActivities**](ActivitiesApi.md#GetLoggedInAthleteActivities) | **Get** /athlete/activities | List Athlete Activities
-[**GetZonesByActivityId**](ActivitiesApi.md#GetZonesByActivityId) | **Get** /activities/{id}/zones | Get Activity Zones
-[**UpdateActivityById**](ActivitiesApi.md#UpdateActivityById) | **Put** /activities/{id} | Update Activity
+[**CreateActivity**](ActivitiesAPI.md#CreateActivity) | **Post** /activities | Create an Activity
+[**GetActivityById**](ActivitiesAPI.md#GetActivityById) | **Get** /activities/{id} | Get Activity
+[**GetCommentsByActivityId**](ActivitiesAPI.md#GetCommentsByActivityId) | **Get** /activities/{id}/comments | List Activity Comments
+[**GetKudoersByActivityId**](ActivitiesAPI.md#GetKudoersByActivityId) | **Get** /activities/{id}/kudos | List Activity Kudoers
+[**GetLapsByActivityId**](ActivitiesAPI.md#GetLapsByActivityId) | **Get** /activities/{id}/laps | List Activity Laps
+[**GetLoggedInAthleteActivities**](ActivitiesAPI.md#GetLoggedInAthleteActivities) | **Get** /athlete/activities | List Athlete Activities
+[**GetZonesByActivityId**](ActivitiesAPI.md#GetZonesByActivityId) | **Get** /activities/{id}/zones | Get Activity Zones
+[**UpdateActivityById**](ActivitiesAPI.md#UpdateActivityById) | **Put** /activities/{id} | Update Activity
 
 
-# **CreateActivity**
-> DetailedActivity CreateActivity(ctx, name, sportType, startDateLocal, elapsedTime, optional)
+
+## CreateActivity
+
+> DetailedActivity CreateActivity(ctx).Name(name).SportType(sportType).StartDateLocal(startDateLocal).ElapsedTime(elapsedTime).Type_(type_).Description(description).Distance(distance).Trainer(trainer).Commute(commute).Execute()
+
 Create an Activity
 
-Creates a manual activity for an athlete, requires activity:write scope.
 
-### Required Parameters
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+    "time"
+	openapiclient "github.com/alexhokl/strava-cli/swagger"
+)
+
+func main() {
+	name := "name_example" // string | The name of the activity.
+	sportType := "sportType_example" // string | Sport type of activity. For example - Run, MountainBikeRide, Ride, etc.
+	startDateLocal := time.Now() // time.Time | ISO 8601 formatted date time.
+	elapsedTime := int32(56) // int32 | In seconds.
+	type_ := "type__example" // string | Type of activity. For example - Run, Ride etc. (optional)
+	description := "description_example" // string | Description of the activity. (optional)
+	distance := float32(3.4) // float32 | In meters. (optional)
+	trainer := int32(56) // int32 | Set to 1 to mark as a trainer activity. (optional)
+	commute := int32(56) // int32 | Set to 1 to mark as commute. (optional)
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.ActivitiesAPI.CreateActivity(context.Background()).Name(name).SportType(sportType).StartDateLocal(startDateLocal).ElapsedTime(elapsedTime).Type_(type_).Description(description).Distance(distance).Trainer(trainer).Commute(commute).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `ActivitiesAPI.CreateActivity``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `CreateActivity`: DetailedActivity
+	fmt.Fprintf(os.Stdout, "Response from `ActivitiesAPI.CreateActivity`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiCreateActivityRequest struct via the builder pattern
+
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **name** | **string**| The name of the activity. | 
-  **sportType** | **string**| Sport type of activity. For example - Run, MountainBikeRide, Ride, etc. | 
-  **startDateLocal** | **time.Time**| ISO 8601 formatted date time. | 
-  **elapsedTime** | **int32**| In seconds. | 
- **optional** | ***ActivitiesApiCreateActivityOpts** | optional parameters | nil if no parameters
-
-### Optional Parameters
-Optional parameters are passed through a pointer to a ActivitiesApiCreateActivityOpts struct
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-
-
-
-
- **type_** | **optional.String**| Type of activity. For example - Run, Ride etc. | 
- **description** | **optional.String**| Description of the activity. | 
- **distance** | **optional.Float32**| In meters. | 
- **trainer** | **optional.Int32**| Set to 1 to mark as a trainer activity. | 
- **commute** | **optional.Int32**| Set to 1 to mark as commute. | 
+ **name** | **string** | The name of the activity. | 
+ **sportType** | **string** | Sport type of activity. For example - Run, MountainBikeRide, Ride, etc. | 
+ **startDateLocal** | **time.Time** | ISO 8601 formatted date time. | 
+ **elapsedTime** | **int32** | In seconds. | 
+ **type_** | **string** | Type of activity. For example - Run, Ride etc. | 
+ **description** | **string** | Description of the activity. | 
+ **distance** | **float32** | In meters. | 
+ **trainer** | **int32** | Set to 1 to mark as a trainer activity. | 
+ **commute** | **int32** | Set to 1 to mark as commute. | 
 
 ### Return type
 
@@ -56,32 +90,67 @@ Name | Type | Description  | Notes
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
- - **Accept**: application/json
+- **Content-Type**: multipart/form-data
+- **Accept**: application/json
 
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
 
-# **GetActivityById**
-> DetailedActivity GetActivityById(ctx, id, optional)
+
+## GetActivityById
+
+> DetailedActivity GetActivityById(ctx, id).IncludeAllEfforts(includeAllEfforts).Execute()
+
 Get Activity
 
-Returns the given activity that is owned by the authenticated athlete. Requires activity:read for Everyone and Followers activities. Requires activity:read_all for Only Me activities.
 
-### Required Parameters
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/alexhokl/strava-cli/swagger"
+)
+
+func main() {
+	id := int64(789) // int64 | The identifier of the activity.
+	includeAllEfforts := true // bool | To include all segments efforts. (optional)
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.ActivitiesAPI.GetActivityById(context.Background(), id).IncludeAllEfforts(includeAllEfforts).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `ActivitiesAPI.GetActivityById``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `GetActivityById`: DetailedActivity
+	fmt.Fprintf(os.Stdout, "Response from `ActivitiesAPI.GetActivityById`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **id** | **int64**| The identifier of the activity. | 
- **optional** | ***ActivitiesApiGetActivityByIdOpts** | optional parameters | nil if no parameters
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**id** | **int64** | The identifier of the activity. | 
 
-### Optional Parameters
-Optional parameters are passed through a pointer to a ActivitiesApiGetActivityByIdOpts struct
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiGetActivityByIdRequest struct via the builder pattern
+
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
- **includeAllEfforts** | **optional.Bool**| To include all segments efforts. | 
+ **includeAllEfforts** | **bool** | To include all segments efforts. | 
 
 ### Return type
 
@@ -93,35 +162,73 @@ Name | Type | Description  | Notes
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
- - **Accept**: application/json
+- **Content-Type**: Not defined
+- **Accept**: application/json
 
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
 
-# **GetCommentsByActivityId**
-> []Comment GetCommentsByActivityId(ctx, id, optional)
+
+## GetCommentsByActivityId
+
+> []Comment GetCommentsByActivityId(ctx, id).Page(page).PerPage(perPage).PageSize(pageSize).AfterCursor(afterCursor).Execute()
+
 List Activity Comments
 
-Returns the comments on the given activity. Requires activity:read for Everyone and Followers activities. Requires activity:read_all for Only Me activities.
 
-### Required Parameters
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/alexhokl/strava-cli/swagger"
+)
+
+func main() {
+	id := int64(789) // int64 | The identifier of the activity.
+	page := int32(56) // int32 | Deprecated. Prefer to use after_cursor. (optional)
+	perPage := int32(56) // int32 | Deprecated. Prefer to use page_size. (optional) (default to 30)
+	pageSize := int32(56) // int32 | Number of items per page. Defaults to 30. (optional) (default to 30)
+	afterCursor := "afterCursor_example" // string | Cursor of the last item in the previous page of results, used to request the subsequent page of results.  When omitted, the first page of results is fetched. (optional)
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.ActivitiesAPI.GetCommentsByActivityId(context.Background(), id).Page(page).PerPage(perPage).PageSize(pageSize).AfterCursor(afterCursor).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `ActivitiesAPI.GetCommentsByActivityId``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `GetCommentsByActivityId`: []Comment
+	fmt.Fprintf(os.Stdout, "Response from `ActivitiesAPI.GetCommentsByActivityId`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **id** | **int64**| The identifier of the activity. | 
- **optional** | ***ActivitiesApiGetCommentsByActivityIdOpts** | optional parameters | nil if no parameters
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**id** | **int64** | The identifier of the activity. | 
 
-### Optional Parameters
-Optional parameters are passed through a pointer to a ActivitiesApiGetCommentsByActivityIdOpts struct
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiGetCommentsByActivityIdRequest struct via the builder pattern
+
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
- **page** | **optional.Int32**| Deprecated. Prefer to use after_cursor. | 
- **perPage** | **optional.Int32**| Deprecated. Prefer to use page_size. | [default to 30]
- **pageSize** | **optional.Int32**| Number of items per page. Defaults to 30. | [default to 30]
- **afterCursor** | **optional.String**| Cursor of the last item in the previous page of results, used to request the subsequent page of results.  When omitted, the first page of results is fetched. | 
+ **page** | **int32** | Deprecated. Prefer to use after_cursor. | 
+ **perPage** | **int32** | Deprecated. Prefer to use page_size. | [default to 30]
+ **pageSize** | **int32** | Number of items per page. Defaults to 30. | [default to 30]
+ **afterCursor** | **string** | Cursor of the last item in the previous page of results, used to request the subsequent page of results.  When omitted, the first page of results is fetched. | 
 
 ### Return type
 
@@ -133,33 +240,69 @@ Name | Type | Description  | Notes
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
- - **Accept**: application/json
+- **Content-Type**: Not defined
+- **Accept**: application/json
 
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
 
-# **GetKudoersByActivityId**
-> []SummaryAthlete GetKudoersByActivityId(ctx, id, optional)
+
+## GetKudoersByActivityId
+
+> []SummaryAthlete GetKudoersByActivityId(ctx, id).Page(page).PerPage(perPage).Execute()
+
 List Activity Kudoers
 
-Returns the athletes who kudoed an activity identified by an identifier. Requires activity:read for Everyone and Followers activities. Requires activity:read_all for Only Me activities.
 
-### Required Parameters
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/alexhokl/strava-cli/swagger"
+)
+
+func main() {
+	id := int64(789) // int64 | The identifier of the activity.
+	page := int32(56) // int32 | Page number. Defaults to 1. (optional)
+	perPage := int32(56) // int32 | Number of items per page. Defaults to 30. (optional) (default to 30)
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.ActivitiesAPI.GetKudoersByActivityId(context.Background(), id).Page(page).PerPage(perPage).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `ActivitiesAPI.GetKudoersByActivityId``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `GetKudoersByActivityId`: []SummaryAthlete
+	fmt.Fprintf(os.Stdout, "Response from `ActivitiesAPI.GetKudoersByActivityId`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **id** | **int64**| The identifier of the activity. | 
- **optional** | ***ActivitiesApiGetKudoersByActivityIdOpts** | optional parameters | nil if no parameters
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**id** | **int64** | The identifier of the activity. | 
 
-### Optional Parameters
-Optional parameters are passed through a pointer to a ActivitiesApiGetKudoersByActivityIdOpts struct
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiGetKudoersByActivityIdRequest struct via the builder pattern
+
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
- **page** | **optional.Int32**| Page number. Defaults to 1. | 
- **perPage** | **optional.Int32**| Number of items per page. Defaults to 30. | [default to 30]
+ **page** | **int32** | Page number. Defaults to 1. | 
+ **perPage** | **int32** | Number of items per page. Defaults to 30. | [default to 30]
 
 ### Return type
 
@@ -171,23 +314,65 @@ Name | Type | Description  | Notes
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
- - **Accept**: application/json
+- **Content-Type**: Not defined
+- **Accept**: application/json
 
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
 
-# **GetLapsByActivityId**
-> []Lap GetLapsByActivityId(ctx, id)
+
+## GetLapsByActivityId
+
+> []Lap GetLapsByActivityId(ctx, id).Execute()
+
 List Activity Laps
 
-Returns the laps of an activity identified by an identifier. Requires activity:read for Everyone and Followers activities. Requires activity:read_all for Only Me activities.
 
-### Required Parameters
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/alexhokl/strava-cli/swagger"
+)
+
+func main() {
+	id := int64(789) // int64 | The identifier of the activity.
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.ActivitiesAPI.GetLapsByActivityId(context.Background(), id).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `ActivitiesAPI.GetLapsByActivityId``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `GetLapsByActivityId`: []Lap
+	fmt.Fprintf(os.Stdout, "Response from `ActivitiesAPI.GetLapsByActivityId`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **id** | **int64**| The identifier of the activity. | 
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**id** | **int64** | The identifier of the activity. | 
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiGetLapsByActivityIdRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
 
 ### Return type
 
@@ -199,33 +384,67 @@ Name | Type | Description  | Notes
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
- - **Accept**: application/json
+- **Content-Type**: Not defined
+- **Accept**: application/json
 
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
 
-# **GetLoggedInAthleteActivities**
-> []SummaryActivity GetLoggedInAthleteActivities(ctx, optional)
+
+## GetLoggedInAthleteActivities
+
+> []SummaryActivity GetLoggedInAthleteActivities(ctx).Before(before).After(after).Page(page).PerPage(perPage).Execute()
+
 List Athlete Activities
 
-Returns the activities of an athlete for a specific identifier. Requires activity:read. Only Me activities will be filtered out unless requested by a token with activity:read_all.
 
-### Required Parameters
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/alexhokl/strava-cli/swagger"
+)
+
+func main() {
+	before := int32(56) // int32 | An epoch timestamp to use for filtering activities that have taken place before a certain time. (optional)
+	after := int32(56) // int32 | An epoch timestamp to use for filtering activities that have taken place after a certain time. (optional)
+	page := int32(56) // int32 | Page number. Defaults to 1. (optional)
+	perPage := int32(56) // int32 | Number of items per page. Defaults to 30. (optional) (default to 30)
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.ActivitiesAPI.GetLoggedInAthleteActivities(context.Background()).Before(before).After(after).Page(page).PerPage(perPage).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `ActivitiesAPI.GetLoggedInAthleteActivities``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `GetLoggedInAthleteActivities`: []SummaryActivity
+	fmt.Fprintf(os.Stdout, "Response from `ActivitiesAPI.GetLoggedInAthleteActivities`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiGetLoggedInAthleteActivitiesRequest struct via the builder pattern
+
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
- **optional** | ***ActivitiesApiGetLoggedInAthleteActivitiesOpts** | optional parameters | nil if no parameters
-
-### Optional Parameters
-Optional parameters are passed through a pointer to a ActivitiesApiGetLoggedInAthleteActivitiesOpts struct
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **before** | **optional.Int32**| An epoch timestamp to use for filtering activities that have taken place before a certain time. | 
- **after** | **optional.Int32**| An epoch timestamp to use for filtering activities that have taken place after a certain time. | 
- **page** | **optional.Int32**| Page number. Defaults to 1. | 
- **perPage** | **optional.Int32**| Number of items per page. Defaults to 30. | [default to 30]
+ **before** | **int32** | An epoch timestamp to use for filtering activities that have taken place before a certain time. | 
+ **after** | **int32** | An epoch timestamp to use for filtering activities that have taken place after a certain time. | 
+ **page** | **int32** | Page number. Defaults to 1. | 
+ **perPage** | **int32** | Number of items per page. Defaults to 30. | [default to 30]
 
 ### Return type
 
@@ -237,23 +456,65 @@ Name | Type | Description  | Notes
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
- - **Accept**: application/json
+- **Content-Type**: Not defined
+- **Accept**: application/json
 
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
 
-# **GetZonesByActivityId**
-> []ActivityZone GetZonesByActivityId(ctx, id)
+
+## GetZonesByActivityId
+
+> []ActivityZone GetZonesByActivityId(ctx, id).Execute()
+
 Get Activity Zones
 
-Summit Feature. Returns the zones of a given activity. Requires activity:read for Everyone and Followers activities. Requires activity:read_all for Only Me activities.
 
-### Required Parameters
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/alexhokl/strava-cli/swagger"
+)
+
+func main() {
+	id := int64(789) // int64 | The identifier of the activity.
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.ActivitiesAPI.GetZonesByActivityId(context.Background(), id).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `ActivitiesAPI.GetZonesByActivityId``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `GetZonesByActivityId`: []ActivityZone
+	fmt.Fprintf(os.Stdout, "Response from `ActivitiesAPI.GetZonesByActivityId`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **id** | **int64**| The identifier of the activity. | 
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**id** | **int64** | The identifier of the activity. | 
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiGetZonesByActivityIdRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
 
 ### Return type
 
@@ -265,32 +526,67 @@ Name | Type | Description  | Notes
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
- - **Accept**: application/json
+- **Content-Type**: Not defined
+- **Accept**: application/json
 
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
 
-# **UpdateActivityById**
-> DetailedActivity UpdateActivityById(ctx, id, optional)
+
+## UpdateActivityById
+
+> DetailedActivity UpdateActivityById(ctx, id).Body(body).Execute()
+
 Update Activity
 
-Updates the given activity that is owned by the authenticated athlete. Requires activity:write. Also requires activity:read_all in order to update Only Me activities
 
-### Required Parameters
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/alexhokl/strava-cli/swagger"
+)
+
+func main() {
+	id := int64(789) // int64 | The identifier of the activity.
+	body := *openapiclient.NewUpdatableActivity() // UpdatableActivity |  (optional)
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.ActivitiesAPI.UpdateActivityById(context.Background(), id).Body(body).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `ActivitiesAPI.UpdateActivityById``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `UpdateActivityById`: DetailedActivity
+	fmt.Fprintf(os.Stdout, "Response from `ActivitiesAPI.UpdateActivityById`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **id** | **int64**| The identifier of the activity. | 
- **optional** | ***ActivitiesApiUpdateActivityByIdOpts** | optional parameters | nil if no parameters
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**id** | **int64** | The identifier of the activity. | 
 
-### Optional Parameters
-Optional parameters are passed through a pointer to a ActivitiesApiUpdateActivityByIdOpts struct
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiUpdateActivityByIdRequest struct via the builder pattern
+
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
- **body** | [**optional.Interface of UpdatableActivity**](UpdatableActivity.md)|  | 
+ **body** | [**UpdatableActivity**](UpdatableActivity.md) |  | 
 
 ### Return type
 
@@ -302,8 +598,10 @@ Name | Type | Description  | Notes
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
- - **Accept**: application/json
+- **Content-Type**: Not defined
+- **Accept**: application/json
 
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
 

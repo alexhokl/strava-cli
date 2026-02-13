@@ -7,6 +7,7 @@ import (
 	"github.com/alexhokl/helper/authhelper"
 	"github.com/alexhokl/strava-cli/swagger"
 	"github.com/spf13/cobra"
+	"golang.org/x/oauth2"
 )
 
 // updateProfileCmd represents the update weight command
@@ -35,11 +36,12 @@ func runUpdateProfile(_ *cobra.Command, _ []string) error {
 	if err != nil {
 		return err
 	}
-	auth := context.WithValue(context.Background(), swagger.ContextAccessToken, savedToken.AccessToken)
+	tokenSource := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: savedToken.AccessToken})
+	auth := context.WithValue(context.Background(), swagger.ContextOAuth2, tokenSource)
 	config := swagger.NewConfiguration()
 	client := swagger.NewAPIClient(config)
 
-	_, _, err = client.AthletesApi.UpdateLoggedInAthlete(auth, updateProfileOpts.weight)
+	_, _, err = client.AthletesAPI.UpdateLoggedInAthlete(auth, updateProfileOpts.weight).Execute()
 	if err != nil {
 		return err
 	}

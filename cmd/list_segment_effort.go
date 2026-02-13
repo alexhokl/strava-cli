@@ -9,9 +9,9 @@ import (
 	"github.com/alexhokl/helper/authhelper"
 	"github.com/alexhokl/helper/jsonhelper"
 	"github.com/alexhokl/strava-cli/swagger"
-	"github.com/antihax/optional"
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
+	"golang.org/x/oauth2"
 )
 
 // listSegmentEffortCmd represents the list segment effort command
@@ -40,16 +40,17 @@ func runListSegmentEfforts(_ *cobra.Command, _ []string) error {
 	if err != nil {
 		return err
 	}
-	auth := context.WithValue(context.Background(), swagger.ContextAccessToken, savedToken.AccessToken)
+	tokenSource := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: savedToken.AccessToken})
+	auth := context.WithValue(context.Background(), swagger.ContextOAuth2, tokenSource)
 	config := swagger.NewConfiguration()
 	client := swagger.NewAPIClient(config)
 
-	opts := &swagger.SegmentEffortsApiGetEffortsBySegmentIdOpts{
-		StartDateLocal: optional.NewTime(time.Date(2022, 1, 1, 0, 0, 0, 0, time.UTC)),
-		EndDateLocal:   optional.NewTime(time.Now()),
-		PerPage:        optional.NewInt32(100),
-	}
-	efforts, _, err := client.SegmentEffortsApi.GetEffortsBySegmentId(auth, listSegmentEffortOpts.id, opts)
+	efforts, _, err := client.SegmentEffortsAPI.GetEffortsBySegmentId(auth).
+		SegmentId(listSegmentEffortOpts.id).
+		StartDateLocal(time.Date(2022, 1, 1, 0, 0, 0, 0, time.UTC)).
+		EndDateLocal(time.Now()).
+		PerPage(100).
+		Execute()
 	if err != nil {
 		return err
 	}
@@ -65,20 +66,21 @@ func runListSegmentEfforts(_ *cobra.Command, _ []string) error {
 
 	var data [][]string
 	for _, e := range efforts {
-		duration, _ := time.ParseDuration(fmt.Sprintf("%ds", e.ElapsedTime))
+		duration, _ := time.ParseDuration(fmt.Sprintf("%ds", e.GetElapsedTime()))
 		arr := []string{
-			e.StartDate.Format("2006-01-02"),
+			e.GetStartDate().Format("2006-01-02"),
 			duration.String(),
-			fmt.Sprintf("%.0f", e.AverageWatts),
-			fmt.Sprintf("%.0f", e.AverageCadence),
-			fmt.Sprintf("%.0f", e.AverageHeartrate),
-			fmt.Sprintf("%.0f", e.MaxHeartrate),
+			fmt.Sprintf("%.0f", e.GetAverageWatts()),
+			fmt.Sprintf("%.0f", e.GetAverageCadence()),
+			fmt.Sprintf("%.0f", e.GetAverageHeartrate()),
+			fmt.Sprintf("%.0f", e.GetMaxHeartrate()),
 		}
 		data = append(data, arr)
 	}
 
 	if len(efforts) > 0 {
-		fmt.Printf("Segment: %s\n", efforts[0].Segment.Name)
+		segment := efforts[0].GetSegment()
+		fmt.Printf("Segment: %s\n", segment.Name)
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)

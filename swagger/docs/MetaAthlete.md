@@ -1,9 +1,55 @@
 # MetaAthlete
 
 ## Properties
+
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Id** | **int64** | The unique identifier of the athlete | [optional] [default to null]
+**Id** | Pointer to **int64** | The unique identifier of the athlete | [optional] 
+
+## Methods
+
+### NewMetaAthlete
+
+`func NewMetaAthlete() *MetaAthlete`
+
+NewMetaAthlete instantiates a new MetaAthlete object
+This constructor will assign default values to properties that have it defined,
+and makes sure properties required by API are set, but the set of arguments
+will change when the set of required properties is changed
+
+### NewMetaAthleteWithDefaults
+
+`func NewMetaAthleteWithDefaults() *MetaAthlete`
+
+NewMetaAthleteWithDefaults instantiates a new MetaAthlete object
+This constructor will only assign default values to properties that have it defined,
+but it doesn't guarantee that properties required by API are set
+
+### GetId
+
+`func (o *MetaAthlete) GetId() int64`
+
+GetId returns the Id field if non-nil, zero value otherwise.
+
+### GetIdOk
+
+`func (o *MetaAthlete) GetIdOk() (*int64, bool)`
+
+GetIdOk returns a tuple with the Id field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetId
+
+`func (o *MetaAthlete) SetId(v int64)`
+
+SetId sets Id field to given value.
+
+### HasId
+
+`func (o *MetaAthlete) HasId() bool`
+
+HasId returns a boolean if a field has been set.
+
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

@@ -1,23 +1,58 @@
-# \AthletesApi
+# \AthletesAPI
 
 All URIs are relative to *https://www.strava.com/api/v3*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**GetLoggedInAthlete**](AthletesApi.md#GetLoggedInAthlete) | **Get** /athlete | Get Authenticated Athlete
-[**GetLoggedInAthleteZones**](AthletesApi.md#GetLoggedInAthleteZones) | **Get** /athlete/zones | Get Zones
-[**GetStats**](AthletesApi.md#GetStats) | **Get** /athletes/{id}/stats | Get Athlete Stats
-[**UpdateLoggedInAthlete**](AthletesApi.md#UpdateLoggedInAthlete) | **Put** /athlete | Update Athlete
+[**GetLoggedInAthlete**](AthletesAPI.md#GetLoggedInAthlete) | **Get** /athlete | Get Authenticated Athlete
+[**GetLoggedInAthleteZones**](AthletesAPI.md#GetLoggedInAthleteZones) | **Get** /athlete/zones | Get Zones
+[**GetStats**](AthletesAPI.md#GetStats) | **Get** /athletes/{id}/stats | Get Athlete Stats
+[**UpdateLoggedInAthlete**](AthletesAPI.md#UpdateLoggedInAthlete) | **Put** /athlete | Update Athlete
 
 
-# **GetLoggedInAthlete**
-> DetailedAthlete GetLoggedInAthlete(ctx, )
+
+## GetLoggedInAthlete
+
+> DetailedAthlete GetLoggedInAthlete(ctx).Execute()
+
 Get Authenticated Athlete
 
-Returns the currently authenticated athlete. Tokens with profile:read_all scope will receive a detailed athlete representation; all others will receive a summary representation.
 
-### Required Parameters
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/alexhokl/strava-cli/swagger"
+)
+
+func main() {
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.AthletesAPI.GetLoggedInAthlete(context.Background()).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `AthletesAPI.GetLoggedInAthlete``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `GetLoggedInAthlete`: DetailedAthlete
+	fmt.Fprintf(os.Stdout, "Response from `AthletesAPI.GetLoggedInAthlete`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
 This endpoint does not need any parameter.
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiGetLoggedInAthleteRequest struct via the builder pattern
+
 
 ### Return type
 
@@ -29,19 +64,56 @@ This endpoint does not need any parameter.
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
- - **Accept**: application/json
+- **Content-Type**: Not defined
+- **Accept**: application/json
 
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
 
-# **GetLoggedInAthleteZones**
-> Zones GetLoggedInAthleteZones(ctx, )
+
+## GetLoggedInAthleteZones
+
+> Zones GetLoggedInAthleteZones(ctx).Execute()
+
 Get Zones
 
-Returns the the authenticated athlete's heart rate and power zones. Requires profile:read_all.
 
-### Required Parameters
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/alexhokl/strava-cli/swagger"
+)
+
+func main() {
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.AthletesAPI.GetLoggedInAthleteZones(context.Background()).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `AthletesAPI.GetLoggedInAthleteZones``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `GetLoggedInAthleteZones`: Zones
+	fmt.Fprintf(os.Stdout, "Response from `AthletesAPI.GetLoggedInAthleteZones`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
 This endpoint does not need any parameter.
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiGetLoggedInAthleteZonesRequest struct via the builder pattern
+
 
 ### Return type
 
@@ -53,23 +125,65 @@ This endpoint does not need any parameter.
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
- - **Accept**: application/json
+- **Content-Type**: Not defined
+- **Accept**: application/json
 
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
 
-# **GetStats**
-> ActivityStats GetStats(ctx, id)
+
+## GetStats
+
+> ActivityStats GetStats(ctx, id).Execute()
+
 Get Athlete Stats
 
-Returns the activity stats of an athlete. Only includes data from activities set to Everyone visibilty.
 
-### Required Parameters
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/alexhokl/strava-cli/swagger"
+)
+
+func main() {
+	id := int64(789) // int64 | The identifier of the athlete. Must match the authenticated athlete.
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.AthletesAPI.GetStats(context.Background(), id).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `AthletesAPI.GetStats``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `GetStats`: ActivityStats
+	fmt.Fprintf(os.Stdout, "Response from `AthletesAPI.GetStats`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **id** | **int64**| The identifier of the athlete. Must match the authenticated athlete. | 
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**id** | **int64** | The identifier of the athlete. Must match the authenticated athlete. | 
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiGetStatsRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
 
 ### Return type
 
@@ -81,23 +195,65 @@ Name | Type | Description  | Notes
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
- - **Accept**: application/json
+- **Content-Type**: Not defined
+- **Accept**: application/json
 
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
 
-# **UpdateLoggedInAthlete**
-> DetailedAthlete UpdateLoggedInAthlete(ctx, weight)
+
+## UpdateLoggedInAthlete
+
+> DetailedAthlete UpdateLoggedInAthlete(ctx, weight).Execute()
+
 Update Athlete
 
-Update the currently authenticated athlete. Requires profile:write scope.
 
-### Required Parameters
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/alexhokl/strava-cli/swagger"
+)
+
+func main() {
+	weight := float32(3.4) // float32 | The weight of the athlete in kilograms.
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.AthletesAPI.UpdateLoggedInAthlete(context.Background(), weight).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `AthletesAPI.UpdateLoggedInAthlete``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `UpdateLoggedInAthlete`: DetailedAthlete
+	fmt.Fprintf(os.Stdout, "Response from `AthletesAPI.UpdateLoggedInAthlete`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **weight** | **float32**| The weight of the athlete in kilograms. | 
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**weight** | **float32** | The weight of the athlete in kilograms. | 
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiUpdateLoggedInAthleteRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
 
 ### Return type
 
@@ -109,8 +265,10 @@ Name | Type | Description  | Notes
 
 ### HTTP request headers
 
- - **Content-Type**: multipart/form-data
- - **Accept**: application/json
+- **Content-Type**: Not defined
+- **Accept**: application/json
 
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
 

@@ -8,9 +8,9 @@ import (
 	"github.com/alexhokl/helper/authhelper"
 	"github.com/alexhokl/helper/jsonhelper"
 	"github.com/alexhokl/strava-cli/swagger"
-	"github.com/antihax/optional"
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
+	"golang.org/x/oauth2"
 )
 
 // listSegmentCmd represents the list segment command
@@ -29,15 +29,15 @@ func runListSegments(_ *cobra.Command, _ []string) error {
 	if err != nil {
 		return err
 	}
-	auth := context.WithValue(context.Background(), swagger.ContextAccessToken, savedToken.AccessToken)
+	tokenSource := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: savedToken.AccessToken})
+	auth := context.WithValue(context.Background(), swagger.ContextOAuth2, tokenSource)
 	config := swagger.NewConfiguration()
 	client := swagger.NewAPIClient(config)
 
-	opts := &swagger.SegmentsApiGetLoggedInAthleteStarredSegmentsOpts{
-		PerPage: optional.NewInt32(100),
-		Page:    optional.NewInt32(1),
-	}
-	segments, _, err := client.SegmentsApi.GetLoggedInAthleteStarredSegments(auth, opts)
+	segments, _, err := client.SegmentsAPI.GetLoggedInAthleteStarredSegments(auth).
+		PerPage(100).
+		Page(1).
+		Execute()
 	if err != nil {
 		return err
 	}
@@ -54,12 +54,12 @@ func runListSegments(_ *cobra.Command, _ []string) error {
 	var data [][]string
 	for _, e := range segments {
 		arr := []string{
-			fmt.Sprintf("%d", e.Id),
-			e.Country,
-			e.Name,
-			fmt.Sprintf("%.1f", e.Distance/1000.0),
-			fmt.Sprintf("%.0f", e.ElevationHigh-e.ElevationLow),
-			fmt.Sprintf("%.2f", (e.ElevationHigh-e.ElevationLow)/e.Distance*100),
+			fmt.Sprintf("%d", e.GetId()),
+			e.GetCountry(),
+			e.GetName(),
+			fmt.Sprintf("%.1f", e.GetDistance()/1000.0),
+			fmt.Sprintf("%.0f", e.GetElevationHigh()-e.GetElevationLow()),
+			fmt.Sprintf("%.2f", (e.GetElevationHigh()-e.GetElevationLow())/e.GetDistance()*100),
 		}
 		data = append(data, arr)
 	}

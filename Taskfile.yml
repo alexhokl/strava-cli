@@ -54,3 +54,24 @@ tasks:
   completion-linux:
     desc: Generate bash completion and save configuration directory
     cmd: $APP_NAME completion bash | sudo tee /etc/bash_completion.d/$APP_NAME
+
+  pull-swagger:
+    desc: Pull Jira API swagger definitions (Platform and Software)
+    preconditions:
+      - sh: command -v curl
+        msg: "curl is required but not installed"
+    cmds:
+      - curl -o swagger.json -sSL https://developers.strava.com/swagger/swagger.json
+
+  generate-swagger:
+    desc: Generate Go client from swagger.json using openapi-generator
+    preconditions:
+      - sh: command -v openapi-generator
+        msg: "openapi-generator is required but not installed. Install with: brew install openapi-generator"
+      - sh: test -f swagger.json
+        msg: "swagger.json not found. Run 'task pull-swagger' first"
+    cmds:
+      - rm -rf swagger
+      - >-
+        openapi-generator generate -i swagger.json -g go -o swagger --package-name swagger --additional-properties=isGoSubmodule=true,enumClassPrefix=true --git-user-id alexhokl --git-repo-id strava-cli
+      - go mod tidy

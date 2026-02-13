@@ -7,9 +7,9 @@ import (
 	"github.com/alexhokl/helper/authhelper"
 	"github.com/alexhokl/strava-cli/swagger"
 	"github.com/alexhokl/strava-cli/ui"
-	"github.com/antihax/optional"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/spf13/cobra"
+	"golang.org/x/oauth2"
 )
 
 type editActivityOptions struct {
@@ -38,19 +38,19 @@ func runEditActivities(_ *cobra.Command, _ []string) error {
 	if err != nil {
 		return err
 	}
-	auth := context.WithValue(context.Background(), swagger.ContextAccessToken, savedToken.AccessToken)
+	tokenSource := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: savedToken.AccessToken})
+	auth := context.WithValue(context.Background(), swagger.ContextOAuth2, tokenSource)
 	config := swagger.NewConfiguration()
 	client := swagger.NewAPIClient(config)
 
-	getOpts := &swagger.ActivitiesApiGetActivityByIdOpts{
-		IncludeAllEfforts: optional.NewBool(false),
-	}
-	activity, _, err := client.ActivitiesApi.GetActivityById(auth, editActivityOpts.id, getOpts)
+	activity, _, err := client.ActivitiesAPI.GetActivityById(auth, editActivityOpts.id).
+		IncludeAllEfforts(false).
+		Execute()
 	if err != nil {
 		return err
 	}
 
-	p := tea.NewProgram(ui.NewEditorModel(activity.Name, activity.Description))
+	p := tea.NewProgram(ui.NewEditorModel(activity.GetName(), activity.GetDescription()))
 	updatedModel, err := p.Run()
 	if err != nil {
 		return err
@@ -61,23 +61,19 @@ func runEditActivities(_ *cobra.Command, _ []string) error {
 		return nil
 	}
 
-	activity.Name = updatedEditorModel.Name()
-	activity.Description = updatedEditorModel.Description()
+	updatableActivity := swagger.UpdatableActivity{}
+	updatableActivity.SetCommute(activity.GetCommute())
+	updatableActivity.SetTrainer(activity.GetTrainer())
+	updatableActivity.SetHideFromHome(activity.GetHideFromHome())
+	updatableActivity.SetDescription(updatedEditorModel.Description())
+	updatableActivity.SetName(updatedEditorModel.Name())
+	updatableActivity.SetType(activity.GetType())
+	updatableActivity.SetSportType(activity.GetSportType())
+	updatableActivity.SetGearId(activity.GetGearId())
 
-	opts := &swagger.ActivitiesApiUpdateActivityByIdOpts{
-		Body: optional.NewInterface(swagger.UpdatableActivity{
-			Commute:      activity.Commute,
-			Trainer:      activity.Trainer,
-			HideFromHome: activity.HideFromHome,
-			Description:  activity.Description,
-			Name:         activity.Name,
-			Type_:        activity.Type_,
-			SportType:    activity.SportType,
-			GearId:       activity.GearId,
-		}),
-	}
-
-	_, _, err = client.ActivitiesApi.UpdateActivityById(auth, editActivityOpts.id, opts)
+	_, _, err = client.ActivitiesAPI.UpdateActivityById(auth, editActivityOpts.id).
+		Body(updatableActivity).
+		Execute()
 	if err != nil {
 		return err
 	}

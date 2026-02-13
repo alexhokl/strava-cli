@@ -8,9 +8,9 @@ import (
 	"github.com/alexhokl/helper/authhelper"
 	"github.com/alexhokl/helper/jsonhelper"
 	"github.com/alexhokl/strava-cli/swagger"
-	"github.com/antihax/optional"
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
+	"golang.org/x/oauth2"
 )
 
 // listActivityCmd represents the list activity command
@@ -29,15 +29,15 @@ func runListActivities(_ *cobra.Command, _ []string) error {
 	if err != nil {
 		return err
 	}
-	auth := context.WithValue(context.Background(), swagger.ContextAccessToken, savedToken.AccessToken)
+	tokenSource := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: savedToken.AccessToken})
+	auth := context.WithValue(context.Background(), swagger.ContextOAuth2, tokenSource)
 	config := swagger.NewConfiguration()
 	client := swagger.NewAPIClient(config)
 
-	opts := &swagger.ActivitiesApiGetLoggedInAthleteActivitiesOpts{
-		PerPage: optional.NewInt32(10),
-		Page:    optional.NewInt32(1),
-	}
-	activities, _, err := client.ActivitiesApi.GetLoggedInAthleteActivities(auth, opts)
+	activities, _, err := client.ActivitiesAPI.GetLoggedInAthleteActivities(auth).
+		PerPage(10).
+		Page(1).
+		Execute()
 	if err != nil {
 		return err
 	}
@@ -54,9 +54,9 @@ func runListActivities(_ *cobra.Command, _ []string) error {
 	var data [][]string
 	for _, e := range activities {
 		arr := []string{
-			fmt.Sprintf("%d", e.Id),
-			e.StartDate.Local().String(),
-			e.Name,
+			fmt.Sprintf("%d", e.GetId()),
+			e.GetStartDate().Local().String(),
+			e.GetName(),
 		}
 		data = append(data, arr)
 	}
