@@ -10,18 +10,18 @@ import (
 	"golang.org/x/oauth2"
 )
 
-// showProfileCmd represents the profile command
-var showProfileCmd = &cobra.Command{
+// describeProfileCmd represents the profile command
+var describeProfileCmd = &cobra.Command{
 	Use:   "profile",
-	Short: "Show profile of the current user",
-	RunE:  runShowProfile,
+	Short: "Describe profile of the current user",
+	RunE:  runDescribeProfile,
 }
 
 func init() {
-	showCmd.AddCommand(showProfileCmd)
+	describeCmd.AddCommand(describeProfileCmd)
 }
 
-func runShowProfile(_ *cobra.Command, _ []string) error {
+func runDescribeProfile(_ *cobra.Command, _ []string) error {
 	savedToken, err := authhelper.LoadTokenFromViper()
 	if err != nil {
 		return err
