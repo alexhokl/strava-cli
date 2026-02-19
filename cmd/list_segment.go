@@ -9,15 +9,17 @@ import (
 	"github.com/alexhokl/helper/jsonhelper"
 	"github.com/alexhokl/strava-cli/swagger"
 	"github.com/olekukonko/tablewriter"
+	"github.com/olekukonko/tablewriter/tw"
 	"github.com/spf13/cobra"
 	"golang.org/x/oauth2"
 )
 
 // listSegmentCmd represents the list segment command
 var listSegmentCmd = &cobra.Command{
-	Use:   "segment",
-	Short: "List starred segment of the current user",
-	RunE:  runListSegments,
+	Use:     "segment",
+	Aliases: []string{"segments"},
+	Short:   "List starred segment of the current user",
+	RunE:    runListSegments,
 }
 
 func init() {
@@ -64,11 +66,16 @@ func runListSegments(_ *cobra.Command, _ []string) error {
 		data = append(data, arr)
 	}
 
-	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"ID", "Country", "Name", "Distance (km)", "Elevation (m)", "Average gradient (%)"})
-	table.SetBorder(false)
-	table.AppendBulk(data)
-	table.Render()
+	table := tablewriter.NewTable(os.Stdout,
+		tablewriter.WithRendition(tw.Rendition{Borders: tw.BorderNone}),
+	)
+	table.Header("ID", "Country", "Name", "Distance (km)", "Elevation (m)", "Average gradient (%)")
+	if err := table.Bulk(data); err != nil {
+		return fmt.Errorf("failed to add table data: %w", err)
+	}
+	if err := table.Render(); err != nil {
+		return fmt.Errorf("failed to render table: %w", err)
+	}
 
 	return nil
 }

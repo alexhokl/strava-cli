@@ -10,15 +10,17 @@ import (
 	"github.com/alexhokl/helper/jsonhelper"
 	"github.com/alexhokl/strava-cli/swagger"
 	"github.com/olekukonko/tablewriter"
+	"github.com/olekukonko/tablewriter/tw"
 	"github.com/spf13/cobra"
 	"golang.org/x/oauth2"
 )
 
 // listSegmentEffortCmd represents the list segment effort command
 var listSegmentEffortCmd = &cobra.Command{
-	Use:   "segment-effort",
-	Short: "List efforts of a segment of the current user order by quickest time",
-	RunE:  runListSegmentEfforts,
+	Use:     "segment-effort",
+	Aliases: []string{"segment-efforts"},
+	Short:   "List efforts of a segment of the current user order by quickest time",
+	RunE:    runListSegmentEfforts,
 }
 
 type listSegmentEffortOptions struct {
@@ -80,14 +82,19 @@ func runListSegmentEfforts(_ *cobra.Command, _ []string) error {
 
 	if len(efforts) > 0 {
 		segment := efforts[0].GetSegment()
-		fmt.Printf("Segment: %s\n", segment.Name)
+		fmt.Printf("Segment: %s\n", *segment.Name)
 	}
 
-	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Date", "Duration", "Power (W)", "Cadence", "Heart rate", "Max heart rate"})
-	table.SetBorder(false)
-	table.AppendBulk(data)
-	table.Render()
+	table := tablewriter.NewTable(os.Stdout,
+		tablewriter.WithRendition(tw.Rendition{Borders: tw.BorderNone}),
+	)
+	table.Header("Date", "Duration", "Power (W)", "Cadence", "Heart rate", "Max heart rate")
+	if err := table.Bulk(data); err != nil {
+		return fmt.Errorf("failed to add table data: %w", err)
+	}
+	if err := table.Render(); err != nil {
+		return fmt.Errorf("failed to render table: %w", err)
+	}
 
 	return nil
 }

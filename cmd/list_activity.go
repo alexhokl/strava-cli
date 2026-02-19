@@ -9,15 +9,17 @@ import (
 	"github.com/alexhokl/helper/jsonhelper"
 	"github.com/alexhokl/strava-cli/swagger"
 	"github.com/olekukonko/tablewriter"
+	"github.com/olekukonko/tablewriter/tw"
 	"github.com/spf13/cobra"
 	"golang.org/x/oauth2"
 )
 
 // listActivityCmd represents the list activity command
 var listActivityCmd = &cobra.Command{
-	Use:   "activity",
-	Short: "List recent activities of the current user",
-	RunE:  runListActivities,
+	Use:     "activity",
+	Aliases: []string{"activities"},
+	Short:   "List recent activities of the current user",
+	RunE:    runListActivities,
 }
 
 func init() {
@@ -61,11 +63,16 @@ func runListActivities(_ *cobra.Command, _ []string) error {
 		data = append(data, arr)
 	}
 
-	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"ID", "Date", "Activity"})
-	table.SetBorder(false)
-	table.AppendBulk(data)
-	table.Render()
+	table := tablewriter.NewTable(os.Stdout,
+		tablewriter.WithRendition(tw.Rendition{Borders: tw.BorderNone}),
+	)
+	table.Header("ID", "Date", "Activity")
+	if err := table.Bulk(data); err != nil {
+		return fmt.Errorf("failed to add table data: %w", err)
+	}
+	if err := table.Render(); err != nil {
+		return fmt.Errorf("failed to render table: %w", err)
+	}
 
 	return nil
 }
