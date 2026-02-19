@@ -22,8 +22,17 @@ var listActivityCmd = &cobra.Command{
 	RunE:    runListActivities,
 }
 
+type listActivityOptions struct {
+	limit int32
+}
+
+var listActivityOpts listActivityOptions
+
 func init() {
 	listCmd.AddCommand(listActivityCmd)
+
+	flags := listActivityCmd.Flags()
+	flags.Int32Var(&listActivityOpts.limit, "limit", 10, "Number of activities to show")
 }
 
 func runListActivities(_ *cobra.Command, _ []string) error {
@@ -36,10 +45,7 @@ func runListActivities(_ *cobra.Command, _ []string) error {
 	config := swagger.NewConfiguration()
 	client := swagger.NewAPIClient(config)
 
-	activities, _, err := client.ActivitiesAPI.GetLoggedInAthleteActivities(auth).
-		PerPage(10).
-		Page(1).
-		Execute()
+	activities, err := fetchActivities(client, auth, listActivityOpts.limit)
 	if err != nil {
 		return err
 	}
@@ -59,6 +65,7 @@ func runListActivities(_ *cobra.Command, _ []string) error {
 			fmt.Sprintf("%d", e.GetId()),
 			e.GetStartDate().Local().String(),
 			e.GetName(),
+			fmt.Sprintf("%d", e.GetTotalPhotoCount()),
 		}
 		data = append(data, arr)
 	}
@@ -66,7 +73,7 @@ func runListActivities(_ *cobra.Command, _ []string) error {
 	table := tablewriter.NewTable(os.Stdout,
 		tablewriter.WithRendition(tw.Rendition{Borders: tw.BorderNone}),
 	)
-	table.Header("ID", "Date", "Activity")
+	table.Header("ID", "Date", "Activity", "Photos")
 	if err := table.Bulk(data); err != nil {
 		return fmt.Errorf("failed to add table data: %w", err)
 	}
@@ -75,4 +82,40 @@ func runListActivities(_ *cobra.Command, _ []string) error {
 	}
 
 	return nil
+}
+
+const maxPerPage int32 = 200
+
+func fetchActivities(client *swagger.APIClient, auth context.Context, limit int32) ([]swagger.SummaryActivity, error) {
+	var allActivities []swagger.SummaryActivity
+
+	page := int32(1)
+	remaining := limit
+
+	for remaining > 0 {
+		perPage := remaining
+		if perPage > maxPerPage {
+			perPage = maxPerPage
+		}
+
+		activities, _, err := client.ActivitiesAPI.GetLoggedInAthleteActivities(auth).
+			PerPage(perPage).
+			Page(page).
+			Execute()
+		if err != nil {
+			return nil, err
+		}
+
+		allActivities = append(allActivities, activities...)
+
+		// If we got fewer activities than requested, we've reached the end
+		if int32(len(activities)) < perPage {
+			break
+		}
+
+		remaining -= int32(len(activities))
+		page++
+	}
+
+	return allActivities, nil
 }
