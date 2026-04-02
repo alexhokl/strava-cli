@@ -3,7 +3,7 @@ module github.com/alexhokl/strava-cli
 go 1.25.5
 
 require (
-	github.com/alexhokl/helper v0.0.91
+	github.com/alexhokl/helper v0.0.93
 	github.com/alexhokl/strava-cli/swagger v0.0.0-00010101000000-000000000000
 	github.com/olekukonko/tablewriter v1.1.3
 	github.com/spf13/cobra v1.10.2
@@ -55,7 +55,7 @@ require (
 	github.com/spf13/pflag v1.0.10 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
 	golang.org/x/sys v0.38.0 // indirect
-	golang.org/x/text v0.28.0 // indirect
+	golang.org/x/text v0.29.0 // indirect
 )
 
 // replace github.com/alexhokl/helper => ../helper

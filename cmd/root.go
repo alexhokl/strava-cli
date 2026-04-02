@@ -3,6 +3,8 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"os"
+	"path/filepath"
 
 	"github.com/alexhokl/helper/authhelper"
 	"github.com/alexhokl/helper/cli"
@@ -13,9 +15,11 @@ import (
 
 var cfgFile string
 
+const applicationName = "strava-cli"
+
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:               "strava-cli",
+	Use:               applicationName,
 	Short:             "A CLI application interacting with Strava API",
 	SilenceUsage:      true,
 	PersistentPreRunE: validateToken,
@@ -27,7 +31,13 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(initConfig)
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.strava-cli.yaml)")
+
+	defaultConfigDesc := fmt.Sprintf("$HOME/.config/%s/config.yaml", applicationName)
+	if configDir, err := os.UserConfigDir(); err == nil {
+		defaultConfigDesc = filepath.Join(configDir, applicationName, "config.yaml")
+	}
+
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", fmt.Sprintf("config file (default: %s)", defaultConfigDesc))
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
